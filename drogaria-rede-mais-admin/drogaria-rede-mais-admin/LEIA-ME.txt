@@ -1,0 +1,48 @@
+DROGARIA REDE MAIS — PAINEL ADMINISTRATIVO (VERSÃO INICIAL)
+
+ESTE É UM PROJETO SEPARADO DO REPOSITÓRIO HELP BICICLETAS.
+Nenhum arquivo do projeto HELP BICICLETAS foi alterado.
+
+COMO ABRIR NO SPCK
+1. Baixe e extraia o arquivo ZIP.
+2. No SPCK, crie/abra um projeto novo chamado drogaria-rede-mais-admin.
+3. Copie a estrutura inteira desta pasta para o novo projeto.
+4. Abra index.html para visualizar a versão inicial.
+
+FUNCIONALIDADES DESTA VERSÃO
+- Interface administrativa responsiva.
+- Navegação lateral e menu adaptado para celular.
+- Visão geral com indicadores calculados a partir dos produtos locais.
+- Cadastro, edição, exclusão e busca de produtos.
+- Categorias de farmácia.
+- Upload local de fotografia do produto (até 1 MB).
+- Controle de quantidades e alerta de estoque baixo.
+- Configurações locais da drogaria.
+- Exportação dos produtos em JSON.
+
+LIMITAÇÕES IMPORTANTES
+- Esta versão é demonstrativa e NÃO possui login seguro.
+- Os dados são armazenados no localStorage do navegador/dispositivo.
+- Os dados não sincronizam entre aparelhos e podem ser perdidos se os dados do navegador forem apagados.
+- Pedidos e vendas ainda não estão conectados ao site público nem ao WhatsApp.
+- Não há integração com Supabase nesta etapa.
+- O painel não deve ser usado para armazenar dados pessoais de clientes.
+
+SEGURANÇA E PRÓXIMA ETAPA
+A autenticação real deverá ser implementada com Supabase Auth, com tabela de administradores autorizados e políticas RLS no banco. As credenciais públicas de projeto serão configuradas apenas quando a integração começar; nunca publicar service_role key, senhas ou segredos no JavaScript.
+
+CATÁLOGO E ANVISA
+Cadastre apenas informações reais e confirmadas. Confirme a legislação da ANVISA para publicidade, comercialização e dispensação de cada produto. Não utilize o painel para anunciar ou vender medicamentos controlados ou itens cuja venda online seja proibida.
+
+ESTRUTURA
+index.html
+css/style.css
+js/app.js
+images/logo-rede-mais.jpg
+LEIA-ME.txt
+
+PRÓXIMO FLUXO COM GITHUB
+- Criar um NOVO repositório público com nome: Drogaria-Rede-Mais-Admin
+- Não usar Fork nem editar Help-Bicicletas-Admin.
+- Enviar os arquivos deste projeto novo para o repositório.
+- Clonar o novo repositório no SPCK e trabalhar nele.
