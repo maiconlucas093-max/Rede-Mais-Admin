@@ -189,3 +189,61 @@
     font-size: 28px;
   }
 }
+
+/* REFINAMENTO DA VISAO GERAL */
+.page-intro {
+  padding: 24px;
+  margin-bottom: 22px;
+  background: linear-gradient(120deg, #ffffff, #edf8f9);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  gap: 18px;
+}
+
+.page-intro h1 {
+  font-size: clamp(23px, 3vw, 30px);
+  letter-spacing: -0.6px;
+  margin: 7px 0;
+}
+
+.page-intro p {
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+.demo-pill {
+  padding: 9px 13px;
+  border-radius: 30px;
+  background: #fff4df;
+  color: #8a5a12;
+  border: 1px solid #f1dfba;
+  font-weight: 700;
+  white-space: normal;
+}
+
+.stats-grid {
+  gap: 18px;
+}
+
+.stat-card {
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(6, 69, 81, .09);
+}
+
+@media (max-width: 720px) {
+  .page-intro {
+    padding: 19px;
+  }
+
+  .demo-pill {
+    font-size: 10px;
+  }
+
+  .stats-grid {
+    gap: 11px;
+  }
+}
