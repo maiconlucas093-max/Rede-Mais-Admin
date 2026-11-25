@@ -25,7 +25,7 @@
     return;
   }
 
-  function showPanel(user) {
+    async function showPanel(user) {
     welcome.hidden = true;
     appShell.hidden = false;
 
@@ -35,8 +35,26 @@
       email.textContent = user.email || "Administrador";
     }
 
-    if (typeof window.redeMaisRefresh === "function") {
-      window.redeMaisRefresh();
+    try {
+      if (typeof window.redeMaisLoadRemoteData !== "function") {
+        throw new Error("Função de leitura do banco não encontrada.");
+      }
+
+      await window.redeMaisLoadRemoteData();
+
+      if (typeof window.redeMaisRefresh === "function") {
+        window.redeMaisRefresh();
+      }
+
+    } catch (error) {
+      console.error("Erro ao carregar dados do Supabase:", error);
+
+      const toast = $("toast");
+
+      if (toast) {
+        toast.textContent = "Não foi possível carregar os dados do banco.";
+        toast.classList.add("show");
+      }
     }
   }
 
@@ -75,7 +93,7 @@
         return;
       }
 
-      showPanel(data.session.user);
+      await showPanel(data.session.user);
     } catch (error) {
       console.error("Erro ao validar administrador:", error);
       await supabase.auth.signOut();
@@ -113,7 +131,7 @@
 
       $("loginPassword").value = "";
 
-      showPanel(data.user);
+      await showPanel(data.user);
 
     } catch (error) {
       console.error("Erro no login:", error);
