@@ -109,16 +109,158 @@ function openProduct(id=null){
  $("productDialog").showModal();
 }
 function closeProduct(){$("productDialog").close();editingId=null}
-async function saveProduct(e){
- e.preventDefault();
- const name=$("productName").value.trim(),category=$("productCategory").value,stock=Number($("productStock").value),price=$("productPrice").value===""?null:Number($("productPrice").value);
- if(!name||!category||!Number.isInteger(stock)||stock<0||(price!==null&&(!Number.isFinite(price)||price<0))){$("productFeedback").textContent="Confira os campos obrigatórios e os valores informados.";return}
- const file=$("productImage").files[0];let image=editingId?(products.find(p=>p.id===editingId)?.image||""):"";
- if(file){if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>1024*1024){$("productFeedback").textContent="Escolha JPG, PNG ou WEBP com até 1 MB.";return}image=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
- const item={id:editingId||("rm-"+Date.now()),name,brand:$("productBrand").value.trim(),category,price,stock,keywords:$("productKeywords").value.trim(),description:$("productDescription").value.trim(),image,active:$("productActive").checked,updatedAt:new Date().toISOString()};
- if(editingId)products=products.map(p=>p.id===editingId?item:p);else products.unshift(item);
- save();closeProduct();refresh();renderProducts();toast(editingId?"Produto atualizado.":"Produto cadastrado.");
+
+function getStoragePath(url) {
+ const marker = "/storage/v1/object/public/product-images/";
+ if (!url || !url.includes(marker)) return null;
+
+ try {
+  return decodeURIComponent(url.split(marker)[1]);
+ } catch {
+  return null;
+ }
 }
+
+async function saveProduct(e) {
+ e.preventDefault();
+
+ const name = $("productName").value.trim();
+ const category = $("productCategory").value;
+ const stock = Number($("productStock").value);
+ const price = $("productPrice").value === "" ? null : Number($("productPrice").value);
+
+ if (!name || !category || !Number.isInteger(stock) || stock < 0 ||
+  (price !== null && (!Number.isFinite(price) || price < 0))) {
+  $("productFeedback").textContent = "Confira os campos obrigatórios e os valores informados.";
+  return;
+ }
+
+ const file = $("productImage").files[0];
+ const current = editingId ? products.find(p => p.id === editingId) : null;
+ let image = current?.image || "";
+ let uploadedPath = null;
+
+ if (file) {
+  const allowed = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+
+  if (!allowed.includes(file.type) || file.size > 5 * 1024 * 1024) {
+   $("productFeedback").textContent = "Escolha JPG, PNG, WEBP ou AVIF com até 5 MB.";
+   return;
+  }
+ }
+
+ const button = $("productForm").querySelector('[type="submit"]');
+ if (button) button.disabled = true;
+
+ $("productFeedback").textContent = "Salvando produto...";
+
+ try {
+  if (!supabase) throw new Error("Conexão com o banco não encontrada.");
+
+  if (file) {
+   const extension = file.type === "image/jpeg" ? "jpg" :
+    file.type === "image/png" ? "png" :
+    file.type === "image/avif" ? "avif" : "webp";
+
+   uploadedPath = `${crypto.randomUUID()}.${extension}`;
+
+   const upload = await supabase.storage
+    .from("product-images")
+    .upload(uploadedPath, file, {
+     contentType: file.type,
+     upsert: false
+    });
+
+   if (upload.error) throw upload.error;
+
+   const publicResult = supabase.storage
+    .from("product-images")
+    .getPublicUrl(uploadedPath);
+
+   image = publicResult.data.publicUrl;
+  }
+
+  const payload = {
+   name,
+   brand: $("productBrand").value.trim(),
+   category,
+   price,
+   stock,
+   keywords: $("productKeywords").value.trim(),
+   description: $("productDescription").value.trim(),
+   image_url: image || null,
+   active: $("productActive").checked,
+   updated_at: new Date().toISOString()
+  };
+
+  let result;
+
+  if (editingId) {
+   result = await supabase
+    .from("products")
+    .update(payload)
+    .eq("id", editingId)
+    .select()
+    .single();
+  } else {
+   result = await supabase
+    .from("products")
+    .insert(payload)
+    .select()
+    .single();
+  }
+
+  if (result.error) throw result.error;
+
+  if (file && current?.image) {
+   const oldPath = getStoragePath(current.image);
+
+   if (oldPath) {
+    await supabase.storage.from("product-images").remove([oldPath]);
+   }
+  }
+
+  const p = result.data;
+
+  const savedProduct = {
+   id: p.id,
+   name: p.name,
+   brand: p.brand || "",
+   category: p.category,
+   price: p.price,
+   stock: p.stock,
+   keywords: p.keywords || "",
+   description: p.description || "",
+   image: p.image_url || "",
+   active: p.active,
+   updatedAt: p.updated_at
+  };
+
+  if (editingId) {
+   products = products.map(item => item.id === editingId ? savedProduct : item);
+  } else {
+   products.push(savedProduct);
+  }
+
+  closeProduct();
+  refresh();
+  toast(editingId ? "Produto atualizado no banco." : "Produto cadastrado no banco.");
+
+ } catch (error) {
+  console.error("Erro ao salvar produto:", error);
+
+  if (uploadedPath) {
+   await supabase.storage.from("product-images").remove([uploadedPath]);
+  }
+
+  $("productFeedback").textContent =
+   error.message || "Não foi possível salvar o produto.";
+
+ } finally {
+  if (button) button.disabled = false;
+ }
+}
+
 function renderProducts(){
  const q=norm($("productSearch").value),cat=$("categoryFilter").value;
  const list=products.filter(p=>(!cat||p.category===cat)&&(!q||norm([p.name,p.brand,p.category,p.keywords,p.description].join(" ")).includes(q)));
