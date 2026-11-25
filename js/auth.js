@@ -20,6 +20,10 @@
       feedback.textContent = message;
     }
   }
+    if (!supabase || !loginForm) {
+    showLogin("Não foi possível iniciar o sistema de acesso. Verifique a conexão.");
+    return;
+  }
 
   function showPanel(user) {
     welcome.hidden = true;
