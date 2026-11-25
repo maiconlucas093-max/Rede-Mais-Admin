@@ -115,6 +115,7 @@ function setPage(name) {
  if (name === "products") renderProducts();
  if (name === "stock") renderStock();
 }
+if (name === "categories") renderCategories();
 document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.page)));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.go)));
 
@@ -127,6 +128,8 @@ $("productDialog").addEventListener("click",e=>{if(e.target===$("productDialog")
 $("productSearch").addEventListener("input",renderProducts);
 $("categoryFilter").addEventListener("change",renderProducts);
 $("productForm").addEventListener("submit",saveProduct);
+$("categoryForm").addEventListener("submit", saveCategory);
+$("cancelCategoryEdit").addEventListener("click", resetCategoryForm);
 function openProduct(id=null){
  editingId=id;const p=id?products.find(x=>x.id===id):null;
  $("productForm").reset();$("productActive").checked=p?p.active:true;$("productStock").value=p?p.stock:0;
