@@ -305,7 +305,7 @@ async function deleteProduct(id) {
   toast(error.message || "Não foi possível excluir o produto.");
  }
 }
-{const p=products.find(x=>x.id===id);if(!p||!confirm(`Excluir "${p.name}" deste navegador?`))return;products=products.filter(x=>x.id!==id);save();refresh();renderProducts();toast("Produto excluído dos dados locais.")}
+
 function renderStock(){
  const total=products.reduce((s,p)=>s+p.stock,0),low=products.filter(p=>p.stock>0&&p.stock<=5).length,zero=products.filter(p=>p.stock===0).length;
  $("stockTotal").textContent=total;$("stockLow").textContent=low;$("stockZero").textContent=zero;$("stockEmpty").hidden=products.length>0;
