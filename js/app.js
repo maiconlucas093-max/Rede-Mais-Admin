@@ -22,12 +22,18 @@ async function loadRemoteData() {
   throw new Error("Conexão com o Supabase não encontrada.");
  }
  
- const [categoryResult, productResult] = await Promise.all([
-  supabase
-  .from("categories")
-  .select("name, icon, note, is_active, sort_order")
-  .eq("is_active", true)
-  .order("sort_order"),
+ 
+  const [categoryResult, productResult] = await Promise.all([
+   supabase
+   .from("categories")
+   .select("name, icon, note, is_active, sort_order")
+   .order("sort_order"),
+   supabase
+   .from("products")
+   .select("*")
+   .order("name")
+  ]);
+
   supabase
   .from("products")
   .select("*")
