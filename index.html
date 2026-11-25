@@ -48,15 +48,37 @@
           </div>
         </div>
 
-        <div class="demo-warning">
-          <strong>Ambiente de demonstração</strong>
-          <span>O acesso ainda não utiliza autenticação. Os dados permanecem neste navegador até a integração com o Supabase.</span>
-        </div>
+        <form id="adminLoginForm" class="login-form">
+  <label class="login-field">
+    E-mail administrativo
+    <input
+      id="loginEmail"
+      type="email"
+      autocomplete="username"
+      placeholder="Digite seu e-mail"
+      required
+    >
+  </label>
 
-        <button class="btn btn-primary btn-wide" id="openPanel">
-          Acessar painel demonstrativo <span>→</span>
-        </button>
-        <small class="welcome-footer">DROGARIA REDE MAIS · PAINEL ADMINISTRATIVO</small>
+  <label class="login-field">
+    Senha
+    <input
+      id="loginPassword"
+      type="password"
+      autocomplete="current-password"
+      placeholder="Digite sua senha"
+      required
+    >
+  </label>
+
+  <button class="btn btn-primary btn-wide" id="loginButton" type="submit">
+    Entrar no painel
+  </button>
+
+  <p id="loginFeedback" class="login-feedback" aria-live="polite"></p>
+</form>
+
+<small class="welcome-footer">DROGARIA REDE MAIS · ACESSO ADMINISTRATIVO</small>
       </div>
     </div>
   </section>
