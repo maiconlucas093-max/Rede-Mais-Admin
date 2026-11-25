@@ -1,13 +1,89 @@
 (() => {
 "use strict";
-const KEY="redeMaisAdminDemo_v1";
-const SETTINGS_KEY="redeMaisAdminSettings_v1";
-let products=load(KEY,[]);
-let editingId=null;
-const $=id=>document.getElementById(id);
-const categories=["Medicamentos (consultar regras)","Higiene pessoal","Cuidados com a pele","Vitaminas e suplementos","Produtos infantis","Cuidados com os cabelos","Saúde e bem-estar","Primeiros socorros","Perfumaria","Conveniência","Outros"];
-function load(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
-function save(){localStorage.setItem(KEY,JSON.stringify(products))}
+const KEY = "redeMaisAdminDemo_v1";
+const SETTINGS_KEY = "redeMaisAdminSettings_v1";
+const supabase = window.redeMaisSupabase;
+let products = [];
+let editingId = null;
+let categories = [];
+const $ = id => document.getElementById(id);
+
+function load(key, fallback) {
+ try { return JSON.parse(localStorage.getItem(key)) ?? fallback }
+ catch { return fallback }
+}
+
+function save() {
+ localStorage.setItem(KEY, JSON.stringify(products))
+}
+
+async function loadRemoteData() {
+ if (!supabase) {
+  throw new Error("Conexão com o Supabase não encontrada.");
+ }
+ 
+ const [categoryResult, productResult] = await Promise.all([
+  supabase
+  .from("categories")
+  .select("name, icon, note, is_active, sort_order")
+  .eq("is_active", true)
+  .order("sort_order"),
+  supabase
+  .from("products")
+  .select("*")
+  .order("name")
+ ]);
+ 
+ if (categoryResult.error) throw categoryResult.error;
+ if (productResult.error) throw productResult.error;
+ 
+ categories = categoryResult.data || [];
+ 
+ products = (productResult.data || []).map(p => ({
+  id: p.id,
+  name: p.name,
+  brand: p.brand || "",
+  category: p.category,
+  price: p.price,
+  stock: p.stock,
+  keywords: p.keywords || "",
+  description: p.description || "",
+  image: p.image_url || "",
+  active: p.active,
+  updatedAt: p.updated_at
+ }));
+ 
+ populateCategorySelects();
+}
+
+function populateCategorySelects() {
+ const filter = $("categoryFilter");
+ const form = $("productCategory");
+ 
+ const previousFilter = filter.value;
+ const previousCategory = form.value;
+ 
+ filter.replaceChildren(
+  new Option("Todas as categorias", "")
+ );
+ 
+ form.replaceChildren(
+  new Option("Selecione", "")
+ );
+ 
+ categories.forEach(category => {
+  filter.add(new Option(category.name, category.name));
+  form.add(new Option(category.name, category.name));
+ });
+ 
+ if (categories.some(c => c.name === previousFilter)) {
+  filter.value = previousFilter;
+ }
+ 
+ if (categories.some(c => c.name === previousCategory)) {
+  form.value = previousCategory;
+ }
+}
 function money(v){return v===""||v===null||v===undefined?"A confirmar":Number(v).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
 function safe(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2600)}
