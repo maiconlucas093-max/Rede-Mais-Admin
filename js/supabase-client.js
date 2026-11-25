@@ -1,11 +1,13 @@
 
-// Conexão oficial do painel administrativo com o Supabase
+// Conexão oficial do painel administrativo
+// Projeto Supabase: PROSPERA
+
 (() => {
   const SUPABASE_URL =
-    "https://keeeubxxundmotvmkncs.supabase.co";
+    "https://fwcfuxsvwexpuxozpkuj.supabase.co";
 
   const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_JfOJ0JVipgIOohQgeTMQ4g_0uZiJ-_7";
+    "sb_publishable_Ba1XXaQ7tFaZg7ebr78rYg_uQas1i7D";
 
   if (!window.supabase?.createClient) {
     console.error("Biblioteca Supabase não carregada.");
@@ -24,5 +26,5 @@
     }
   );
 
-  console.log("Conexão Supabase preparada.");
+  console.log("Painel conectado ao Supabase PROSPERA.");
 })();
