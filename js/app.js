@@ -23,17 +23,11 @@ async function loadRemoteData() {
  }
  
  
-  const [categoryResult, productResult] = await Promise.all([
-   supabase
-   .from("categories")
-   .select("name, icon, note, is_active, sort_order")
-   .order("sort_order"),
-   supabase
-   .from("products")
-   .select("*")
-   .order("name")
-  ]);
-
+   const [categoryResult, productResult] = await Promise.all([
+  supabase
+  .from("categories")
+  .select("name, icon, note, is_active, sort_order")
+  .order("sort_order"),
   supabase
   .from("products")
   .select("*")
