@@ -69,4 +69,5 @@ $("settingsForm").addEventListener("submit",e=>{e.preventDefault();const s={name
 const savedSettings=load(SETTINGS_KEY,null);if(savedSettings){$("storeName").value=savedSettings.name||"Drogaria Rede Mais";$("storeWhatsapp").value=savedSettings.whatsapp||"";$("storeCity").value=savedSettings.city||"";$("storeAddress").value=savedSettings.address||"";$("storeHours").value=savedSettings.hours||""}
 $("exportData").addEventListener("click",()=>{const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),products},null,2)],{type:"application/json"});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="drogaria-rede-mais-produtos.json";a.click();URL.revokeObjectURL(url);toast("Arquivo JSON exportado.")});
 $("clearData").addEventListener("click",()=>{if(!confirm("Isso apagará os produtos salvos neste navegador. Deseja continuar?"))return;products=[];save();refresh();toast("Dados locais apagados.")});
+window.redeMaisRefresh = refresh;
 })();
