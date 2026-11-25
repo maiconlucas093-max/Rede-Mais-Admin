@@ -112,11 +112,12 @@ function setPage(name) {
  $("sidebar").classList.remove("open");
  window.scrollTo({ top: 0, behavior: "smooth" });
  
- if (name === "products") renderProducts();
+  if (name === "products") renderProducts();
  if (name === "stock") renderStock();
-}
-if (name === "categories") renderCategories();
-document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.page)));
+ if (name === "categories") renderCategories();
+ }
+ 
+ document.querySelectorAll("[data-page]").forEach(b => b.addEventListener("click", () => setPage(b.dataset.page)));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.go)));
 
 $("mobileMenu").addEventListener("click",()=>$("sidebar").classList.toggle("open"));
