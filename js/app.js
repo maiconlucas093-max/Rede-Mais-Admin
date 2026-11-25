@@ -88,7 +88,32 @@ window.redeMaisLoadRemoteData = loadRemoteData;
 function money(v){return v===""||v===null||v===undefined?"A confirmar":Number(v).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
 function safe(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2600)}
-function setPage(name){document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+name));document.querySelectorAll(".nav-item").forEach(b=>b.classList.toggle("active",b.dataset.page===name));const labels={dashboard:"Visão geral",products:"Produtos",stock:"Estoque",orders:"Pedidos WhatsApp",sales:"Vendas",settings:"Configurações"};$("pageTitle").textContent=labels[name]||"Painel";$("sidebar").classList.remove("open");window.scrollTo({top:0,behavior:"smooth"});if(name==="products")renderProducts();if(name==="stock")renderStock()}
+function setPage(name) {
+ document.querySelectorAll(".page").forEach(p =>
+  p.classList.toggle("active", p.id === "page-" + name)
+ );
+ 
+ document.querySelectorAll(".nav-item").forEach(b =>
+  b.classList.toggle("active", b.dataset.page === name)
+ );
+ 
+ const labels = {
+  dashboard: "Visão geral",
+  products: "Produtos",
+  categories: "Categorias",
+  stock: "Estoque",
+  orders: "Pedidos WhatsApp",
+  sales: "Vendas",
+  settings: "Configurações"
+ };
+ 
+ $("pageTitle").textContent = labels[name] || "Painel";
+ $("sidebar").classList.remove("open");
+ window.scrollTo({ top: 0, behavior: "smooth" });
+ 
+ if (name === "products") renderProducts();
+ if (name === "stock") renderStock();
+}
 document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.page)));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.go)));
 
