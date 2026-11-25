@@ -84,6 +84,7 @@ function populateCategorySelects() {
   form.value = previousCategory;
  }
 }
+window.redeMaisLoadRemoteData = loadRemoteData;
 function money(v){return v===""||v===null||v===undefined?"A confirmar":Number(v).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
 function safe(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2600)}
