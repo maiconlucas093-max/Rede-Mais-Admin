@@ -6,6 +6,7 @@ const supabase = window.redeMaisSupabase;
 let products = [];
 let editingId = null;
 let categories = [];
+let editingCategoryName = null;
 const $ = id => document.getElementById(id);
 
 function load(key, fallback) {
@@ -340,6 +341,197 @@ function renderStock(){
  $("stockTable").innerHTML=products.map(p=>`<tr><td><strong>${safe(p.name)}</strong></td><td>${safe(p.category)}</td><td>${p.stock}</td><td><span class="status-badge ${p.stock===0||p.stock<=5?"low":""}">${p.stock===0?"Sem estoque":p.stock<=5?"Estoque baixo":"Regular"}</span></td><td><div class="table-actions"><button data-stock-edit="${safe(p.id)}">Editar</button></div></td></tr>`).join("");
  $("stockTable").querySelectorAll("[data-stock-edit]").forEach(b=>b.addEventListener("click",()=>openProduct(b.dataset.stockEdit)));
 }
+
+function renderCategories() {
+ const table = $("categoriesTable");
+
+ if (!table) return;
+
+ table.innerHTML = categories
+  .slice()
+  .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
+  .map(category => `
+   <tr>
+    <td>${safe(category.icon || "＋")}</td>
+    <td>
+     <strong>${safe(category.name)}</strong>
+     ${category.note ? `<br><small>${safe(category.note)}</small>` : ""}
+    </td>
+    <td>${Number(category.sort_order || 0)}</td>
+    <td>
+     <span class="status-badge ${category.is_active ? "" : "off"}">
+      ${category.is_active ? "Ativa" : "Inativa"}
+     </span>
+    </td>
+    <td>
+     <div class="table-actions">
+      <button type="button" data-category-edit="${safe(category.name)}">
+       Editar
+      </button>
+      <button
+       type="button"
+       data-category-toggle="${safe(category.name)}"
+       class="delete"
+      >
+       ${category.is_active ? "Desativar" : "Ativar"}
+      </button>
+     </div>
+    </td>
+   </tr>
+  `).join("");
+
+ table.querySelectorAll("[data-category-edit]").forEach(button => {
+  button.addEventListener("click", () => {
+   editCategory(button.dataset.categoryEdit);
+  });
+ });
+
+ table.querySelectorAll("[data-category-toggle]").forEach(button => {
+  button.addEventListener("click", () => {
+   toggleCategory(button.dataset.categoryToggle);
+  });
+ });
+}
+
+function editCategory(name) {
+ const category = categories.find(item => item.name === name);
+
+ if (!category) return;
+
+ editingCategoryName = category.name;
+
+ $("categoryName").value = category.name;
+ $("categoryName").readOnly = true;
+ $("categoryIcon").value = category.icon || "＋";
+ $("categoryOrder").value = category.sort_order ?? 0;
+ $("categoryNote").value = category.note || "";
+ $("categoryActive").checked = Boolean(category.is_active);
+
+ $("categoryFormTitle").textContent = "Editar categoria";
+ $("cancelCategoryEdit").hidden = false;
+ $("categoryFeedback").textContent = "";
+
+ $("categoryForm").scrollIntoView({
+  behavior: "smooth",
+  block: "start"
+ });
+}
+
+function resetCategoryForm() {
+ editingCategoryName = null;
+
+ $("categoryForm").reset();
+ $("categoryName").readOnly = false;
+ $("categoryIcon").value = "＋";
+ $("categoryOrder").value = 12;
+ $("categoryActive").checked = true;
+
+ $("categoryFormTitle").textContent = "Nova categoria";
+ $("cancelCategoryEdit").hidden = true;
+ $("categoryFeedback").textContent = "";
+}
+
+async function saveCategory(event) {
+ event.preventDefault();
+
+ const name = $("categoryName").value.trim();
+ const icon = $("categoryIcon").value.trim() || "＋";
+ const note = $("categoryNote").value.trim();
+ const sortOrder = Number($("categoryOrder").value);
+ const isActive = $("categoryActive").checked;
+
+ if (!name || !Number.isInteger(sortOrder) || sortOrder < 0) {
+  $("categoryFeedback").textContent =
+   "Informe um nome e uma ordem válida.";
+  return;
+ }
+
+ const button = $("categoryForm").querySelector('[type="submit"]');
+ button.disabled = true;
+ $("categoryFeedback").textContent = "Salvando categoria...";
+
+ try {
+  if (!supabase) {
+   throw new Error("Conexão com o Supabase não encontrada.");
+  }
+
+  let result;
+
+  if (editingCategoryName) {
+   result = await supabase
+    .from("categories")
+    .update({
+     icon,
+     note,
+     is_active: isActive,
+     sort_order: sortOrder
+    })
+    .eq("name", editingCategoryName);
+  } else {
+   result = await supabase
+    .from("categories")
+    .insert({
+     name,
+     icon,
+     note,
+     is_active: isActive,
+     sort_order: sortOrder
+    });
+  }
+
+  if (result.error) throw result.error;
+
+  const wasEditing = Boolean(editingCategoryName);
+
+  await loadRemoteData();
+  refresh();
+  renderCategories();
+  resetCategoryForm();
+
+  toast(wasEditing
+   ? "Categoria atualizada."
+   : "Categoria cadastrada.");
+
+ } catch (error) {
+  console.error("Erro ao salvar categoria:", error);
+  $("categoryFeedback").textContent =
+   error.message || "Não foi possível salvar a categoria.";
+ } finally {
+  button.disabled = false;
+ }
+}
+
+async function toggleCategory(name) {
+ const category = categories.find(item => item.name === name);
+
+ if (!category) return;
+
+ const action = category.is_active ? "desativar" : "ativar";
+
+ if (!confirm(`Deseja ${action} a categoria "${name}"?`)) {
+  return;
+ }
+
+ try {
+  const { error } = await supabase
+   .from("categories")
+   .update({ is_active: !category.is_active })
+   .eq("name", name);
+
+  if (error) throw error;
+
+  await loadRemoteData();
+  refresh();
+  renderCategories();
+
+  toast(`Categoria ${category.is_active ? "desativada" : "ativada"}.`);
+
+ } catch (error) {
+  console.error("Erro ao alterar categoria:", error);
+  toast(error.message || "Não foi possível alterar a categoria.");
+ }
+}
+
 function refresh(){
  const active=products.filter(p=>p.active).length,total=products.reduce((s,p)=>s+p.stock,0),low=products.filter(p=>p.stock<=5).length;
  $("statProducts").textContent=products.length;$("statActive").textContent=active;$("statStock").textContent=total;$("statLow").textContent=low;
