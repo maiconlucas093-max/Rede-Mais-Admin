@@ -151,7 +151,82 @@
           <div class="stats-grid stock-stats"><article class="stat-card"><div class="stat-head"><span>Itens cadastrados</span><span class="stat-icon">▤</span></div><strong id="stockTotal">0</strong><small>Unidades registradas</small></article><article class="stat-card"><div class="stat-head"><span>Estoque baixo</span><span class="stat-icon alert-icon">!</span></div><strong id="stockLow">0</strong><small>Até 5 unidades</small></article><article class="stat-card"><div class="stat-head"><span>Sem estoque</span><span class="stat-icon alert-icon">×</span></div><strong id="stockZero">0</strong><small>Quantidade igual a zero</small></article></div>
           <div class="panel-card table-card"><div class="table-heading"><div><h2>Posição do estoque</h2><p>Atualize a quantidade editando o produto.</p></div></div><div class="table-wrap"><table><thead><tr><th>Produto</th><th>Categoria</th><th>Quantidade</th><th>Situação</th><th>Ação</th></tr></thead><tbody id="stockTable"></tbody></table></div><div id="stockEmpty" class="empty-inline">Cadastre produtos para acompanhar o estoque.</div></div>
         </section>
-
+<section class="page" id="page-categories">
+  <div class="page-intro">
+    <div>
+      <span class="eyebrow">ORGANIZAÇÃO DO CATÁLOGO</span>
+      <h1>Gerenciamento de categorias</h1>
+      <p>Cadastre e organize as categorias dos produtos da drogaria.</p>
+    </div>
+  </div>
+  
+  <div class="panel-card settings-card">
+    <div class="form-section-title">
+      <h2 id="categoryFormTitle">Nova categoria</h2>
+      <p>Informe os dados da categoria.</p>
+    </div>
+    
+    <form id="categoryForm">
+      <div class="form-grid">
+        <label class="field full">
+          Nome da categoria
+          <input id="categoryName" maxlength="80" required placeholder="Ex.: Cuidados com a saúde">
+        </label>
+        
+        <label class="field">
+          Ícone
+          <input id="categoryIcon" maxlength="8" value="＋">
+        </label>
+        
+        <label class="field">
+          Ordem de exibição
+          <input id="categoryOrder" type="number" min="0" step="1" value="12" required>
+        </label>
+        
+        <label class="field full">
+          Observação
+          <input id="categoryNote" maxlength="180" placeholder="Descrição opcional">
+        </label>
+        
+        <label class="check-field full">
+          <input id="categoryActive" type="checkbox" checked>
+          Categoria ativa
+        </label>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn btn-secondary" type="button" id="cancelCategoryEdit" hidden>Cancelar edição</button>
+        <button class="btn btn-primary" type="submit">Salvar categoria</button>
+      </div>
+      
+      <p class="form-feedback" id="categoryFeedback" aria-live="polite"></p>
+    </form>
+  </div>
+  
+  <div class="panel-card table-card" style="margin-top:18px">
+    <div class="table-heading">
+      <div>
+        <h2>Categorias cadastradas</h2>
+        <p>Informações armazenadas no Supabase.</p>
+      </div>
+    </div>
+    
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ícone</th>
+            <th>Categoria</th>
+            <th>Ordem</th>
+            <th>Situação</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="categoriesTable"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
         <section class="page" id="page-orders">
           <div class="page-intro"><div><span class="eyebrow">ATENDIMENTO</span><h1>Pedidos pelo WhatsApp</h1><p>Área preparada para acompanhar solicitações enviadas pelo site público.</p></div></div>
           <div class="integration-empty"><div class="integration-icon">▧</div><h2>Integração de pedidos ainda não ativada</h2><p>Atualmente, o site público abre uma conversa no WhatsApp. As mensagens não são armazenadas automaticamente neste painel.</p><p>Na futura integração, poderemos registrar pedidos no Supabase e exibir status, itens e dados necessários ao atendimento.</p><span class="future-label">Funcionalidade prevista para a integração</span></div>
