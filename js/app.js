@@ -71,7 +71,7 @@ function populateCategorySelects() {
   new Option("Selecione", "")
  );
  
- categories.forEach(category => {
+  categories.filter(category => category.is_active).forEach(category => {
   filter.add(new Option(category.name, category.name));
   form.add(new Option(category.name, category.name));
  });
