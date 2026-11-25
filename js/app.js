@@ -242,9 +242,12 @@ async function saveProduct(e) {
    products.push(savedProduct);
   }
 
-  closeProduct();
-  refresh();
-  toast(editingId ? "Produto atualizado no banco." : "Produto cadastrado no banco.");
+  
+   const wasEditing = Boolean(editingId);
+   closeProduct();
+   refresh();
+   toast(wasEditing ? "Produto atualizado no banco." : "Produto cadastrado no banco.");
+
 
  } catch (error) {
   console.error("Erro ao salvar produto:", error);
