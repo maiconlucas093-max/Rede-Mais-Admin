@@ -270,7 +270,42 @@ function renderProducts(){
  $("productsTable").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>openProduct(b.dataset.edit)));
  $("productsTable").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteProduct(b.dataset.delete)));
 }
-function deleteProduct(id){const p=products.find(x=>x.id===id);if(!p||!confirm(`Excluir "${p.name}" deste navegador?`))return;products=products.filter(x=>x.id!==id);save();refresh();renderProducts();toast("Produto excluído dos dados locais.")}
+
+async function deleteProduct(id) {
+ const p = products.find(item => item.id === id);
+
+ if (!p || !confirm(`Excluir "${p.name}" permanentemente do banco?`)) return;
+
+ try {
+  const { error } = await supabase
+   .from("products")
+   .delete()
+   .eq("id", id);
+
+  if (error) throw error;
+
+  if (p.image) {
+   const path = getStoragePath(p.image);
+
+   if (path) {
+    const { error: imageError } = await supabase.storage
+     .from("product-images")
+     .remove([path]);
+
+    if (imageError) console.warn("Produto excluído, mas a foto não foi removida:", imageError);
+   }
+  }
+
+  products = products.filter(item => item.id !== id);
+  refresh();
+  toast("Produto excluído do banco.");
+
+ } catch (error) {
+  console.error("Erro ao excluir produto:", error);
+  toast(error.message || "Não foi possível excluir o produto.");
+ }
+}
+{const p=products.find(x=>x.id===id);if(!p||!confirm(`Excluir "${p.name}" deste navegador?`))return;products=products.filter(x=>x.id!==id);save();refresh();renderProducts();toast("Produto excluído dos dados locais.")}
 function renderStock(){
  const total=products.reduce((s,p)=>s+p.stock,0),low=products.filter(p=>p.stock>0&&p.stock<=5).length,zero=products.filter(p=>p.stock===0).length;
  $("stockTotal").textContent=total;$("stockLow").textContent=low;$("stockZero").textContent=zero;$("stockEmpty").hidden=products.length>0;

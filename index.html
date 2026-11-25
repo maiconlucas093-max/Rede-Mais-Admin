@@ -191,7 +191,8 @@
         <label class="field">Quantidade em estoque<input id="productStock" type="number" min="0" step="1" value="0" required></label>
         <label class="field full">Palavras-chave<input id="productKeywords" maxlength="180" placeholder="Termos para facilitar a busca"></label>
         <label class="field full">Descrição<textarea id="productDescription" rows="3" maxlength="500" placeholder="Descrição objetiva e confirmada"></textarea></label>
-        <label class="field full">Fotografia do produto<input id="productImage" type="file" accept="image/png,image/jpeg,image/webp"><small>JPG, PNG ou WEBP. Até 1 MB nesta versão local.</small></label>
+        <label class="field full">Fotografia do produto<input id="productImage" type="file" accept="image/jpeg,image/png,image/webp,image/avif"><small>JPG, PNG, WEBP ou AVIF. Até 5 MB. As imagens serão armazenadas no Supabase.</small></label>
+
         <label class="check-field full"><input id="productActive" type="checkbox" checked> Produto ativo no catálogo</label>
       </div>
       <div class="regulatory-note">Atenção: antes de publicar qualquer medicamento, confirme as regras da ANVISA aplicáveis à categoria, à publicidade e à dispensação. Este painel não autoriza venda online de medicamentos controlados ou proibidos.</div>
